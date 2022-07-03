@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { Text, Button, Alert } from "react-native";
+import { Text } from "react-native";
 
 const IconButton = ({ title, onPress, icon }) => (
   <NotebookButton onPress={onPress}>

@@ -6,68 +6,150 @@ import {
   Modal,
   View,
   Pressable,
+  TextInput,
+  SectionList,
 } from "react-native";
 import { useEffect, useState } from "react";
 import styled from "styled-components/native";
+
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
 import IconButton from "../components/buttons/IconButton";
+import NoteBookItem from "../components/buttons/NoteBookItem";
 import { tempNoteListData } from "../constants/tempData";
+import bookCoverImageList from "../constants/bookCoverImageList";
+import store from "../store/index";
 
 const HomeScreen = ({ navigation }) => {
   const [noteBookList, setNoteBookList] = useState(tempNoteListData);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const NoteBookItem = ({ name, bookCoverImage }) => (
-    <NoteBookCard
-      onPress={() => Alert.alert(`${name} 노트북 선택 하였습니다.`)}
-    >
-      <Text style={{ fontSize: 60 }}>{bookCoverImage}</Text>
-      <Text style={{ fontSize: 20 }}>{name}</Text>
-    </NoteBookCard>
-  );
-
-  const renderItem = ({ item }) => (
-    <NoteBookItem name={item.name} bookCoverImage={item.bookCoverImage} />
-  );
+  const [currentModal, setCurrentModal] = useState(null);
+  const [newNoteTitle, setNewNoteTitle] = useState("");
+  const [newNoteCoverImage, setNewNoteCoverImage] = useState("");
+  const [currentChosenItem, setChosenItem] = useState("");
 
   return (
     <Contatiner>
-      <LeftSide>
+      <LeftMainView>
         <FlatList
-          data={noteBookList}
-          renderItem={renderItem}
+          data={noteBookList.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+          )}
+          renderItem={({ item }) => (
+            <NoteBookItem
+              name={item.name}
+              bookCoverImage={item.bookCoverImage}
+            />
+          )}
           keyExtractor={(item) => item.name}
           numColumns={7}
         />
-      </LeftSide>
-      <RightControl>
-        <IconButton
-          onPress={() => Alert.alert("새 노트북 버튼 눌렸음")}
+      </LeftMainView>
+      <RightControlView>
+        <NewButton
+          onPress={() => setCurrentModal("newNoteModal")}
           icon={<FontAwesome5 name="plus" size={36} color="black" />}
         />
-        <IconButton
-          onPress={() => setModalVisible(true)}
+        <InfoButton
+          onPress={() => setCurrentModal("infoModal")}
           icon={<FontAwesome5 name="info-circle" size={36} color="black" />}
         />
-        <Modal
+        <NewNoteModal
           animationType="slide"
           transparent={true}
-          visible={modalVisible}
+          visible={currentModal === "newNoteModal"}
           onRequestClose={() => {
-            setModalVisible(!modalVisible);
+            setCurrentModal(null);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <NewNoteModalView>
+              <Text
+                style={{
+                  marginBottom: 20,
+                  fontSize: 30,
+                }}
+              >
+                노트북 제목
+              </Text>
+              <NewNoteModalTextInput
+                placeholder="제목을 입력하세요"
+                style={{ marginBottom: 20, paddingLeft: 5, fontSize: 20 }}
+                value={newNoteTitle}
+                onChangeText={(text) => setNewNoteTitle(text)}
+              />
+              <Text style={{ marginBottom: 20, fontSize: 30 }}>
+                노트북 커버 이미지
+              </Text>
+              <View style={{ height: 200 }}>
+                <FlatList
+                  style={{ height: 400 }}
+                  data={bookCoverImageList}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      onPress={() => {
+                        setNewNoteCoverImage(item.image);
+                        setChosenItem(item.id);
+                      }}
+                    >
+                      <View
+                        style={{
+                          flex: 1,
+                          alignItems: "center",
+                          marginRight: 30,
+                        }}
+                      >
+                        <Text style={{ fontSize: 60 }}>{item.image}</Text>
+                        {item.id === currentChosenItem && (
+                          <FontAwesome5
+                            name="check-circle"
+                            size={24}
+                            color="black"
+                          />
+                        )}
+                      </View>
+                    </Pressable>
+                  )}
+                  numColumns={7}
+                />
+              </View>
+              <NewNoteModalButtonsView>
+                <NewNoteModalButton
+                  onPress={() => Alert.alert("생성 버튼을 눌렀습니다")}
+                >
+                  <Text>생성</Text>
+                </NewNoteModalButton>
+                <NewNoteModalButton
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setNewNoteCoverImage("");
+                    setNewNoteTitle("");
+                    setChosenItem("");
+                  }}
+                >
+                  <Text>취소</Text>
+                </NewNoteModalButton>
+              </NewNoteModalButtonsView>
+            </NewNoteModalView>
+          </View>
+        </NewNoteModal>
+        <InfoModal
+          animationType="slide"
+          transparent={true}
+          visible={currentModal === "infoModal"}
+          onRequestClose={() => {
+            setCurrentModal(null);
           }}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <ModalText>{`수오지오를 위한 아빠의 선물 😘`}</ModalText>
-              <ButtonClose onPress={() => setModalVisible(!modalVisible)}>
+              <ModalCloseButton onPress={() => setCurrentModal(null)}>
                 <Feather name="x-circle" size={24} color="black" />
-              </ButtonClose>
+              </ModalCloseButton>
             </View>
           </View>
-        </Modal>
-      </RightControl>
+        </InfoModal>
+      </RightControlView>
     </Contatiner>
   );
 };
@@ -85,10 +167,10 @@ const styles = StyleSheet.create({
   modalView: {
     width: "100%",
     height: "91.1%",
+    paddingLeft: 25,
     backgroundColor: "white",
     borderRadius: 20,
     paddingTop: 50,
-    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -107,22 +189,13 @@ const Contatiner = styled.View`
   flex-direction: row;
 `;
 
-const LeftSide = styled.SafeAreaView`
+const LeftMainView = styled.SafeAreaView`
   width: 88%;
   background-color: white;
   padding-top: 20px;
 `;
 
-const NoteBookCard = styled.Pressable`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100px;
-  height: 100px;
-  margin: 24px;
-`;
-
-const RightControl = styled.View`
+const RightControlView = styled.View`
   width: 12%;
   background-color: silver;
   padding-top: 30px;
@@ -133,17 +206,55 @@ const RightControl = styled.View`
   align-items: center;
 `;
 
-const ModalView = styled(View)``;
+const NewButton = styled(IconButton)``;
 
-const ButtonClose = styled(Pressable)`
+const InfoButton = styled(IconButton)``;
+
+const ModalCloseButton = styled(Pressable)`
   align-self: flex-end;
   position: absolute;
   border-radius: 20px;
   padding: 10px;
 `;
 
+const InfoModal = styled(Modal)``;
+
 const ModalText = styled(Text)`
   margin-bottom: 15px;
   text-align: center;
   font-size: 48px;
+`;
+
+const NewNoteModal = styled(Modal)``;
+
+const NewNoteModalView = styled(View)`
+  width: 100%;
+  height: 90%;
+  background-color: white;
+  border-radius: 20px;
+  padding-top: 50px;
+  display: flex;
+
+  padding-left: 20px;
+`;
+
+const NewNoteModalTextInput = styled(TextInput)`
+  height: 40px;
+  width: 200px;
+  border: 1px solid black;
+`;
+
+const NewNoteModalButtonsView = styled(View)`
+  display: flex;
+  flex-direction: row;
+`;
+
+const NewNoteModalButton = styled(Pressable)`
+  width: 100px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-right: 20px;
+  justify-content: center;
+  align-items: center;
 `;
