@@ -50,19 +50,27 @@ const HomeScreen = ({ navigation }) => {
   return (
     <Contatiner>
       <LeftMainView>
-        <FlatList
-          data={noteBookList.sort(
-            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-          )}
-          renderItem={({ item }) => (
-            <NoteBookItem
-              noteBookTitle={item.noteBookTitle}
-              noteBookCoverImage={item.noteBookCoverImage}
-            />
-          )}
-          keyExtractor={(item, index) => item.noteBookTitle + index}
-          numColumns={6}
-        />
+        {noteBookList.length > 0 ? (
+          <FlatList
+            data={noteBookList.sort(
+              (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+            )}
+            renderItem={({ item }) => (
+              <NoteBookItem
+                navigation={navigation}
+                noteBookTitle={item.noteBookTitle}
+                noteBookCoverImage={item.noteBookCoverImage}
+                item={item}
+              />
+            )}
+            keyExtractor={(item, index) => item.noteBookTitle + index}
+            numColumns={6}
+          />
+        ) : (
+          <Text style={{ paddingLeft: 20, fontSize: 20 }}>
+            노트북 목록이 없습니다.
+          </Text>
+        )}
       </LeftMainView>
       <RightControlView>
         <NewButton

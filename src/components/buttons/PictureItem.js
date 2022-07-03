@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
-import { Text, Alert } from "react-native";
+import { Text } from "react-native";
 
-const NoteBookItem = ({
+const PictureItem = ({
   noteBookTitle,
   noteBookCoverImage,
   item,
@@ -13,7 +13,7 @@ const NoteBookItem = ({
   </NoteBookCard>
 );
 
-export default NoteBookItem;
+export default PictureItem;
 
 const NoteBookCard = styled.Pressable`
   display: flex;
