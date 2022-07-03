@@ -1,10 +1,12 @@
 import styled from "styled-components/native";
 import { Text, Alert } from "react-native";
 
-const NoteBookItem = ({ name, bookCoverImage }) => (
-  <NoteBookCard onPress={() => Alert.alert(`${name} 노트북 선택 하였습니다.`)}>
-    <Text style={{ fontSize: 60 }}>{bookCoverImage}</Text>
-    <Text style={{ fontSize: 20 }}>{name}</Text>
+const NoteBookItem = ({ noteBookTitle, noteBookCoverImage }) => (
+  <NoteBookCard
+    onPress={() => Alert.alert(`${noteBookTitle} 노트북 선택 하였습니다.`)}
+  >
+    <Text style={{ fontSize: 60 }}>{noteBookCoverImage}</Text>
+    <Text style={{ fontSize: 18 }}>{noteBookTitle}</Text>
   </NoteBookCard>
 );
 
@@ -14,7 +16,7 @@ const NoteBookCard = styled.Pressable`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   margin: 24px;
 `;

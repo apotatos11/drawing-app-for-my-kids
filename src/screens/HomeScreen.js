@@ -9,7 +9,7 @@ import {
   TextInput,
   SectionList,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components/native";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -18,14 +18,34 @@ import IconButton from "../components/buttons/IconButton";
 import NoteBookItem from "../components/buttons/NoteBookItem";
 import { tempNoteListData } from "../constants/tempData";
 import bookCoverImageList from "../constants/bookCoverImageList";
+import {
+  getItemFromAsyncStorage,
+  setItemToAsyncStorage,
+} from "../utils/asyncStorageHelper";
 import store from "../store/index";
 
 const HomeScreen = ({ navigation }) => {
-  const [noteBookList, setNoteBookList] = useState(tempNoteListData);
+  const [noteBookList, setNoteBookList] = useState([]);
   const [currentModal, setCurrentModal] = useState(null);
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteCoverImage, setNewNoteCoverImage] = useState("");
   const [currentChosenItem, setChosenItem] = useState("");
+
+  const getNoteBooks = async () => {
+    try {
+      const result = await getItemFromAsyncStorage("Notes");
+
+      if (result === null || !result.length) {
+        await setItemToAsyncStorage("Notes", tempNoteListData);
+      }
+
+      setNoteBookList(result);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getNoteBooks();
+  }, [noteBookList]);
 
   return (
     <Contatiner>
@@ -36,12 +56,12 @@ const HomeScreen = ({ navigation }) => {
           )}
           renderItem={({ item }) => (
             <NoteBookItem
-              name={item.name}
-              bookCoverImage={item.bookCoverImage}
+              noteBookTitle={item.noteBookTitle}
+              noteBookCoverImage={item.noteBookCoverImage}
             />
           )}
-          keyExtractor={(item) => item.name}
-          numColumns={7}
+          keyExtractor={(item, index) => item.noteBookTitle + index}
+          numColumns={6}
         />
       </LeftMainView>
       <RightControlView>
@@ -113,12 +133,34 @@ const HomeScreen = ({ navigation }) => {
                 />
               </View>
               <NewNoteModalButtonsView>
-                <NewNoteModalButton
-                  onPress={() => Alert.alert("생성 버튼을 눌렀습니다")}
+                <NewNoteModalCreateButton
+                  onPress={async () => {
+                    if (!newNoteTitle || !newNoteCoverImage) {
+                      Alert.alert("폼 작성을 완료하세요!");
+                      return;
+                    }
+                    const newDate = new Date();
+                    const noteBookList = await getItemFromAsyncStorage("Notes");
+
+                    noteBookList.push({
+                      noteBookTitle: newNoteTitle,
+                      noteBookCoverImage: newNoteCoverImage,
+                      updatedAt: newDate,
+                      createdAt: newDate,
+                      pictures: [],
+                    });
+
+                    await setItemToAsyncStorage("Notes", noteBookList);
+
+                    setCurrentModal(null);
+                    setNewNoteCoverImage("");
+                    setNewNoteTitle("");
+                    setChosenItem("");
+                  }}
                 >
                   <Text>생성</Text>
-                </NewNoteModalButton>
-                <NewNoteModalButton
+                </NewNoteModalCreateButton>
+                <NewNoteModalCancleButton
                   onPress={() => {
                     setCurrentModal(null);
                     setNewNoteCoverImage("");
@@ -127,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
                   }}
                 >
                   <Text>취소</Text>
-                </NewNoteModalButton>
+                </NewNoteModalCancleButton>
               </NewNoteModalButtonsView>
             </NewNoteModalView>
           </View>
@@ -258,3 +300,7 @@ const NewNoteModalButton = styled(Pressable)`
   justify-content: center;
   align-items: center;
 `;
+
+const NewNoteModalCreateButton = styled(NewNoteModalButton)``;
+
+const NewNoteModalCancleButton = styled(NewNoteModalButton)``;
