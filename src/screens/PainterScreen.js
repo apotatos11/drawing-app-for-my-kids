@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, FlatList, Alert } from "react-native";
+import { Text, Alert } from "react-native";
 import styled from "styled-components/native";
 
 const PainterScreen = ({ route, navigation }) => {

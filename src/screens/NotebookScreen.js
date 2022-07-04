@@ -27,9 +27,6 @@ const NoteBookScreen = ({ route, navigation }) => {
 
   // readDirectoryFromFileSystem();
 
-  console.log(notebookId);
-  console.log(currentModal);
-
   return (
     <Contatiner>
       <LeftMainView>
@@ -118,11 +115,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    marginRight: 145,
+    marginRight: 150,
+    marginBottom: 20,
   },
   modalView: {
     width: 300,
-    height: 400,
+    height: 200,
     backgroundColor: "white",
     borderRadius: 20,
     paddingTop: 50,
