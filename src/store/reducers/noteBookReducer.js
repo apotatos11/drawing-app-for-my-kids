@@ -9,6 +9,7 @@ export default function notebookReducer(state, action) {
       newState = [
         ...state,
         {
+          _id: "notebook" + newDate.getTime(),
           noteBookTitle: action.payload.newNoteTitle,
           noteBookCoverImage: action.payload.newNoteCoverImage,
           updatedAt: newDate,
@@ -19,7 +20,7 @@ export default function notebookReducer(state, action) {
 
       return newState;
     case DELETE_NOTEBOOK:
-      newState = state.filter((item) => item._id !== action.payload._id);
+      newState = state.filter((item) => item._id !== action.payload.notebookId);
 
       return newState;
     default:

@@ -1,24 +1,34 @@
-import { useEffect, useState } from "react";
-import { Text, FlatList, Alert } from "react-native";
+import { useEffect, useState, useLayoutEffect } from "react";
+import {
+  Text,
+  FlatList,
+  Alert,
+  Modal,
+  View,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import styled from "styled-components/native";
 import PictureItem from "../components/buttons/PictureItem";
-import {
-  downloadImageToFileSystem,
-  readDirectoryFromFileSystem,
-} from "../utils/fileSystemHelper";
+
 import { tempPictureListData } from "../constants/tempData";
+import { deleteNotebook } from "../store/actions/noteBookActions";
+import { dispatchNotes } from "../store/index";
 
 const NoteBookScreen = ({ route, navigation }) => {
-  console.log(route.params);
-  const { pictures, noteBookTitle } = route.params;
-  const [pictureList, setPictureList] = useState(tempPictureListData);
+  const [pictureList, setPictureList] = useState([]);
+  const [currentModal, setCurrentModal] = useState(null);
 
-  // 파일 목록 불러와서 넣어주기
-  // useEffect(() => {
-  //   setPictureList(pictures);
-  // }, [pictures]);
+  const { pictures, noteBookTitle, _id: notebookId } = route.params;
+
+  useLayoutEffect(() => {
+    setPictureList(tempPictureListData);
+  }, [pictureList]);
 
   // readDirectoryFromFileSystem();
+
+  console.log(notebookId);
+  console.log(currentModal);
 
   return (
     <Contatiner>
@@ -55,17 +65,76 @@ const NoteBookScreen = ({ route, navigation }) => {
         </TopButtons>
         <BottomButtons>
           <DeleteNotebookButton
-            onPress={() => Alert.alert("노트북 삭제버튼입니다.")}
+            onPress={() => {
+              setCurrentModal("deleteNoteModal");
+            }}
           >
             <Text style={{ fontSize: 60 }}>🗑</Text>
           </DeleteNotebookButton>
         </BottomButtons>
+        <DeleteNoteModal
+          animationType="slide"
+          transparent={true}
+          visible={currentModal === "deleteNoteModal"}
+          onRequestClose={() => {
+            setCurrentModal(null);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <ModalView>
+                <ModalCautionView>
+                  <ModalCautionText>
+                    노트북을 삭제 하시겠습니까?
+                  </ModalCautionText>
+                </ModalCautionView>
+                <ModalButtonView>
+                  <ModalButton onPress={() => setCurrentModal(null)}>
+                    <ModalButtonText>취소</ModalButtonText>
+                  </ModalButton>
+                  <ModalButton
+                    onPress={async () => {
+                      await dispatchNotes(deleteNotebook(notebookId));
+                      navigation.goBack();
+                    }}
+                  >
+                    <ModalButtonText>삭제</ModalButtonText>
+                  </ModalButton>
+                </ModalButtonView>
+              </ModalView>
+            </View>
+          </View>
+        </DeleteNoteModal>
       </RightControlView>
     </Contatiner>
   );
 };
 
 export default NoteBookScreen;
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    marginRight: 145,
+  },
+  modalView: {
+    width: 300,
+    height: 400,
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingTop: 50,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+});
 
 const Contatiner = styled.View`
   display: flex;
@@ -97,3 +166,47 @@ const LoadPictureButton = styled.Pressable``;
 
 const BottomButtons = styled.View``;
 const DeleteNotebookButton = styled.Pressable``;
+
+const DeleteNoteModal = styled(Modal)``;
+const ModalView = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalCautionView = styled.View`
+  width: 250px;
+  height: 50px;
+  display: flex;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+const ModalCautionText = styled.Text`
+  font-size: 22px;
+  font-weight: bold;
+  color: red;
+`;
+
+const ModalButtonView = styled.View`
+  display: flex;
+  flex-direction: row;
+`;
+
+const ModalButton = styled.Pressable`
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 100px;
+  height: 35px;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalButtonText = styled.Text`
+  font-size: 15px;
+  font-weight: bold;
+  color: black;
+`;
