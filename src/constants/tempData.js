@@ -5,7 +5,32 @@ export const tempNoteListData = [
     noteBookCoverImage: "📘",
     updatedAt: `${new Date(1656896661855)}`,
     createdAt: `${new Date(1656767896912)}`,
-    pictures: [],
+    pictures: [
+      {
+        _id: "picture" + 1656767896912,
+        filePath: "",
+        updatedAt: `${new Date(1656896661855)}`,
+        createdAt: `${new Date(1656767896912)}`,
+      },
+      {
+        _id: "picture" + 1656767896912,
+        filePath: "",
+        updatedAt: `${new Date(1656896661855)}`,
+        createdAt: `${new Date(1656767896912)}`,
+      },
+      {
+        _id: "picture" + 1656767896912,
+        filePath: "",
+        updatedAt: `${new Date(1656896661855)}`,
+        createdAt: `${new Date(1656767896912)}`,
+      },
+      {
+        _id: "picture" + 1656767896912,
+        filePath: "",
+        updatedAt: `${new Date(1656896661855)}`,
+        createdAt: `${new Date(1656767896912)}`,
+      },
+    ],
   },
   {
     _id: "notebook" + 1656768896912,
@@ -33,5 +58,104 @@ export const tempNoteListData = [
     updatedAt: `${new Date(1656896671855)}`,
     createdAt: `${new Date(1656797896912)}`,
     pictures: [],
+  },
+];
+
+export const tempPictureListData = [
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/1.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/2.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/3.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/4.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/1.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/2.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/3.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/4.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/1.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/2.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/3.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/4.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/1.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/2.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/3.png"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
+  },
+  {
+    _id: "picture" + 1656767896912,
+    filePath: require("../constants/pictures/4.jpeg"),
+    updatedAt: `${new Date(1656896661855)}`,
+    createdAt: `${new Date(1656767896912)}`,
   },
 ];

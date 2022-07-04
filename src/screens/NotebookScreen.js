@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
 import { Text, FlatList, Alert } from "react-native";
 import styled from "styled-components/native";
-import NoteBookItem from "../components/buttons/NoteBookItem";
+import PictureItem from "../components/buttons/PictureItem";
+import {
+  downloadImageToFileSystem,
+  readDirectoryFromFileSystem,
+} from "../utils/fileSystemHelper";
+import { tempPictureListData } from "../constants/tempData";
 
 const NoteBookScreen = ({ route, navigation }) => {
   const { pictures, noteBookTitle } = route.params;
-  const [pictureList, setPictureList] = useState([]);
-  useEffect(() => {
-    setPictureList(pictures);
-  }, [pictures]);
+  const [pictureList, setPictureList] = useState(tempPictureListData);
+
+  // 파일 목록 불러와서 넣어주기
+  // useEffect(() => {
+  //   setPictureList(pictures);
+  // }, [pictures]);
 
   console.log("pictureList", pictureList);
+
+  readDirectoryFromFileSystem();
 
   return (
     <Contatiner>
@@ -19,15 +28,14 @@ const NoteBookScreen = ({ route, navigation }) => {
           <FlatList
             data={pictureList}
             renderItem={({ item }) => (
-              <NoteBookItem
+              <PictureItem
                 navigation={navigation}
-                noteBookTitle={item.noteBookTitle}
-                noteBookCoverImage={item.noteBookCoverImage}
                 item={item}
+                uri={item.filePath}
               />
             )}
-            keyExtractor={(item, index) => item.noteBookTitle + index}
-            numColumns={6}
+            keyExtractor={(item, index) => item._id + index}
+            numColumns={3}
           />
         ) : (
           <Text style={{ paddingLeft: 20, fontSize: 20 }}>
