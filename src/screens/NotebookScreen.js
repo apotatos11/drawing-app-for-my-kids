@@ -36,12 +36,21 @@ const NoteBookScreen = ({ route, navigation }) => {
         )}
       </LeftMainView>
       <RightControlView>
-        <NewPictureButton onPress={() => navigation.navigate("Painter")}>
-          <Text style={{ fontSize: 60, marginBottom: 20 }}>📄</Text>
-        </NewPictureButton>
-        <LoadPictureButton onPress={() => navigation.navigate("LoadImage")}>
-          <Text style={{ fontSize: 60 }}>✂️</Text>
-        </LoadPictureButton>
+        <TopButtons>
+          <NewPictureButton onPress={() => navigation.navigate("Painter")}>
+            <Text style={{ fontSize: 60, marginBottom: 20 }}>📄</Text>
+          </NewPictureButton>
+          <LoadPictureButton onPress={() => navigation.navigate("LoadImage")}>
+            <Text style={{ fontSize: 60, marginBottom: 20 }}>✂️</Text>
+          </LoadPictureButton>
+        </TopButtons>
+        <BottomButtons>
+          <DeleteNotebookButton
+            onPress={() => Alert.alert("노트북 삭제버튼입니다.")}
+          >
+            <Text style={{ fontSize: 60 }}>🗑</Text>
+          </DeleteNotebookButton>
+        </BottomButtons>
       </RightControlView>
     </Contatiner>
   );
@@ -69,8 +78,13 @@ const RightControlView = styled.View`
   padding-bottom: 30px;
 
   display: flex;
+  justify-content: space-between;
   align-items: center;
 `;
 
+const TopButtons = styled.View``;
 const NewPictureButton = styled.Pressable``;
 const LoadPictureButton = styled.Pressable``;
+
+const BottomButtons = styled.View``;
+const DeleteNotebookButton = styled.Pressable``;

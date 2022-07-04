@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import styled from "styled-components/native";
 import {
   Text,
   Alert,
@@ -7,10 +9,7 @@ import {
   View,
   Pressable,
   TextInput,
-  SectionList,
 } from "react-native";
-import { useEffect, useState, useMemo } from "react";
-import styled from "styled-components/native";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
@@ -22,11 +21,11 @@ import {
   getItemFromAsyncStorage,
   setItemToAsyncStorage,
 } from "../utils/asyncStorageHelper";
-import store from "../store/index";
 
 const HomeScreen = ({ navigation }) => {
   const [noteBookList, setNoteBookList] = useState([]);
   const [currentModal, setCurrentModal] = useState(null);
+
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteCoverImage, setNewNoteCoverImage] = useState("");
   const [currentChosenItem, setChosenItem] = useState("");
