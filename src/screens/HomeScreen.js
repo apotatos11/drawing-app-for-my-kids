@@ -21,6 +21,9 @@ import {
   getItemFromAsyncStorage,
   setItemToAsyncStorage,
 } from "../utils/asyncStorageHelper";
+import { createNotebook } from "../store/actions/noteBookActions";
+import { dispatchNotes } from "../store/index";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [noteBookList, setNoteBookList] = useState([]);
@@ -146,18 +149,10 @@ const HomeScreen = ({ navigation }) => {
                       Alert.alert("폼 작성을 완료하세요!");
                       return;
                     }
-                    const newDate = new Date();
-                    const noteBookList = await getItemFromAsyncStorage("Notes");
 
-                    noteBookList.push({
-                      noteBookTitle: newNoteTitle,
-                      noteBookCoverImage: newNoteCoverImage,
-                      updatedAt: newDate,
-                      createdAt: newDate,
-                      pictures: [],
-                    });
-
-                    await setItemToAsyncStorage("Notes", noteBookList);
+                    dispatchNotes(
+                      createNotebook(newNoteTitle, newNoteCoverImage)
+                    );
 
                     setCurrentModal(null);
                     setNewNoteCoverImage("");

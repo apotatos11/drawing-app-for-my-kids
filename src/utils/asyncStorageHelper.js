@@ -1,4 +1,4 @@
-import AsyncStorage from "../store/index";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const isEmpty = function (value) {
   if (

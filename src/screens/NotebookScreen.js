@@ -9,6 +9,7 @@ import {
 import { tempPictureListData } from "../constants/tempData";
 
 const NoteBookScreen = ({ route, navigation }) => {
+  console.log(route.params);
   const { pictures, noteBookTitle } = route.params;
   const [pictureList, setPictureList] = useState(tempPictureListData);
 
@@ -17,16 +18,16 @@ const NoteBookScreen = ({ route, navigation }) => {
   //   setPictureList(pictures);
   // }, [pictures]);
 
-  console.log("pictureList", pictureList);
-
-  readDirectoryFromFileSystem();
+  // readDirectoryFromFileSystem();
 
   return (
     <Contatiner>
       <LeftMainView>
         {pictureList.length > 0 ? (
           <FlatList
-            data={pictureList}
+            data={pictureList.sort(
+              (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+            )}
             renderItem={({ item }) => (
               <PictureItem
                 navigation={navigation}

@@ -71,19 +71,19 @@ export const tempPictureListData = [
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/2.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896761856)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/3.png"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896861857)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/4.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896961858)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
@@ -95,19 +95,19 @@ export const tempPictureListData = [
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/2.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896761856)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/3.png"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896861857)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/4.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896961858)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
@@ -119,19 +119,19 @@ export const tempPictureListData = [
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/2.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896761856)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/3.png"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896861857)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/4.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(165689696185)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
@@ -143,19 +143,19 @@ export const tempPictureListData = [
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/2.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896761855)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/3.png"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896861855)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
   {
     _id: "picture" + 1656767896912,
     filePath: require("../constants/pictures/4.jpeg"),
-    updatedAt: `${new Date(1656896661855)}`,
+    updatedAt: `${new Date(1656896961855)}`,
     createdAt: `${new Date(1656767896912)}`,
   },
 ];

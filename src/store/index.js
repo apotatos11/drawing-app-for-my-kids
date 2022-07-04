@@ -1,3 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import notebookReducer from "./reducers/noteBookReducer";
+import {
+  setItemToAsyncStorage,
+  getItemFromAsyncStorage,
+} from "../utils/asyncStorageHelper";
 
-export default AsyncStorage;
+export const dispatchNotes = async (action) => {
+  const currentState = await getItemFromAsyncStorage("Notes");
+
+  const result = notebookReducer(currentState, action);
+  setItemToAsyncStorage("Notes", result);
+};
