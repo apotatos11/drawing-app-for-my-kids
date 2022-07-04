@@ -1,16 +1,27 @@
 import { useEffect, useState } from "react";
-import { Text, Alert, StyleSheet, Modal } from "react-native";
+import { Text, Alert, StyleSheet, View, Image } from "react-native";
 import Slider from "@react-native-community/slider";
 import styled from "styled-components/native";
+import { openImagePickerAsync } from "../utils/imagePickerHelper";
 
 const ImageProcessingScreen = ({ route, navigation }) => {
-  const [originalImage, setOriginalImage] = useState(null);
-  const [processedImage, setProcessedImage] = useState(null);
+  const [originalImageUri, setOriginalImageUri] = useState(null);
+  const [processedImageUri, setProcessedImageUri] = useState(null);
   const [currentModal, setCurrentModal] = useState("");
+  const [onInputUrlModal, setInputUrlModal] = useState(false);
+  const [currentInputUrl, setInputUrl] = useState(null);
 
   const [sigma, setSigma] = useState(0);
   const [lowThreshold, setLowThreshold] = useState(0);
   const [highThreshold, setHighThreshold] = useState(0);
+
+  const loadImagefromImagePicker = async () => {
+    const imageUri = await openImagePickerAsync();
+
+    setOriginalImageUri(imageUri);
+  };
+
+  console.log(originalImageUri);
 
   return (
     <Contatiner>
@@ -18,24 +29,38 @@ const ImageProcessingScreen = ({ route, navigation }) => {
         <OriginalImageView
           style={{ borderRightColor: "black", borderRightWidth: 1 }}
         >
-          <ImageLoadButton onPress={() => Alert.alert("이미지 불러오기")}>
-            <Text
-              style={{
-                fontSize: 60,
-              }}
-            >
-              📂
-            </Text>
-            <Text style={{ fontSize: 20 }}>이미지 불러오기</Text>
-          </ImageLoadButton>
+          {originalImageUri ? (
+            <Image
+              source={{ uri: originalImageUri }}
+              style={styles.thumbnail}
+            />
+          ) : (
+            <ImageLoadButton onPress={() => setCurrentModal("imageLoadModal")}>
+              <Text
+                style={{
+                  fontSize: 60,
+                }}
+              >
+                📂
+              </Text>
+              <Text style={{ fontSize: 20 }}>이미지 불러오기</Text>
+            </ImageLoadButton>
+          )}
         </OriginalImageView>
         <ProcessedImageView>
-          <Text style={{ fontSize: 20 }}>이미지가 없습니다.</Text>
+          {processedImageUri ? (
+            <Image
+              source={{ uri: processedImageUri }}
+              style={styles.thumbnail}
+            />
+          ) : (
+            <Text style={{ fontSize: 20 }}>이미지가 없습니다.</Text>
+          )}
         </ProcessedImageView>
       </UpperMainView>
       <DownerControlView>
         <SliderView>
-          {originalImage && (
+          {originalImageUri && (
             <Sliders>
               <SliderItem>
                 <Slider
@@ -79,7 +104,7 @@ const ImageProcessingScreen = ({ route, navigation }) => {
         <ButtonsView>
           <ControlButton
             style={styles.controlButton}
-            onPress={() => Alert.alert("이미지 불러오기")}
+            onPress={() => setCurrentModal("imageLoadModal")}
           >
             <ButtonText>불러오기</ButtonText>
           </ControlButton>
@@ -103,6 +128,101 @@ const ImageProcessingScreen = ({ route, navigation }) => {
           </ControlButton>
         </ButtonsView>
       </DownerControlView>
+      <ImageLoadModal
+        animationType="slide"
+        transparent={true}
+        visible={currentModal === "imageLoadModal"}
+        onRequestClose={() => {
+          setCurrentModal(null);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ModalView>
+              <ModalButtonView>
+                <ModalButton
+                  onPress={() => {
+                    setOriginalImageUri(null);
+                    setCurrentModal(null);
+                  }}
+                >
+                  <ModalButtonText>취소</ModalButtonText>
+                </ModalButton>
+                <ModalButton
+                  onPress={() => {
+                    setProcessedImageUri(originalImageUri);
+                    setCurrentModal(null);
+                  }}
+                >
+                  <ModalButtonText>저장</ModalButtonText>
+                </ModalButton>
+              </ModalButtonView>
+              <ModalMainView>
+                <ModalMainButton onPress={loadImagefromImagePicker}>
+                  <ModalMainButtonText>사진첩에서 불러오기</ModalMainButtonText>
+                </ModalMainButton>
+                <ModalMainButton
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setInputUrlModal(!onInputUrlModal);
+                  }}
+                >
+                  <ModalMainButtonText>URL 입력하기 </ModalMainButtonText>
+                </ModalMainButton>
+              </ModalMainView>
+            </ModalView>
+          </View>
+        </View>
+      </ImageLoadModal>
+      <ImageUrlInputModal
+        animationType="fade"
+        transparent={true}
+        visible={onInputUrlModal}
+        onRequestClose={() => {
+          setInputUrlModal(false);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ModalView>
+              <ModalButtonView>
+                <ModalButton
+                  onPress={() => {
+                    setOriginalImageUri(null);
+                    setInputUrlModal(!onInputUrlModal);
+                  }}
+                >
+                  <ModalButtonText>취소</ModalButtonText>
+                </ModalButton>
+              </ModalButtonView>
+              <ModalMainView>
+                <Text
+                  style={{
+                    marginBottom: 20,
+                    fontSize: 30,
+                  }}
+                >
+                  URL 입력창
+                </Text>
+                <ImageUrlTextInput
+                  placeholder="이미지 URL을 입력하세요"
+                  value={currentInputUrl}
+                  onChangeText={(URL) => setInputUrl(URL)}
+                />
+                <ImageUrlSaveButton
+                  onPress={() => {
+                    setOriginalImageUri(currentInputUrl);
+                    setInputUrlModal(!onInputUrlModal);
+                    setCurrentModal("imageLoadModal");
+                  }}
+                >
+                  <ImageUrlSaveButtonText>저장</ImageUrlSaveButtonText>
+                </ImageUrlSaveButton>
+              </ModalMainView>
+            </ModalView>
+          </View>
+        </View>
+      </ImageUrlInputModal>
     </Contatiner>
   );
 };
@@ -110,6 +230,47 @@ const ImageProcessingScreen = ({ route, navigation }) => {
 export default ImageProcessingScreen;
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    marginBottom: 195,
+    marginRight: 10,
+  },
+  modalView: {
+    width: 580,
+    height: 560,
+    backgroundColor: "white",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 4,
+  },
+  centeredInputModalView: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    marginRight: 10,
+  },
+  inputModalView: {
+    width: 580,
+    height: 50,
+    backgroundColor: "white",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 4,
+  },
   controlButton: {
     backgroundColor: "white",
     shadowColor: "#000",
@@ -119,6 +280,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+  },
+  thumbnail: {
+    width: 580,
+    height: 580,
+    resizeMode: "contain",
   },
 });
 
@@ -214,4 +380,83 @@ const ControlButton = styled.Pressable`
 
 const ButtonText = styled.Text`
   font-size: 30px;
+`;
+
+const ImageLoadModal = styled.Modal``;
+
+const ModalView = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalButtonView = styled.View`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 20%;
+`;
+
+const ModalButton = styled.Pressable`
+  border-radius: 10px;
+  width: 100px;
+  height: 35px;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalButtonText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  color: blue;
+`;
+
+const ModalMainView = styled.View`
+  width: 100%;
+  height: 80%;
+  padding: 10px;
+`;
+
+const ModalMainButton = styled.Pressable`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  background-color: silver;
+`;
+
+const ModalMainButtonText = styled.Text`
+  font-size: 20px;
+`;
+
+const ImageUrlInputModal = styled.Modal``;
+
+const ImageUrlTextInput = styled.TextInput`
+  height: 40px;
+  width: 200px;
+  border: 1px solid black;
+  padding-left: 5px;
+  font-size: 20px;
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const ImageUrlSaveButton = styled.Pressable`
+  width: 100px;
+  height: 50px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ImageUrlSaveButtonText = styled.Text`
+  font-size: 20px;
 `;
