@@ -1,31 +1,23 @@
-import { useEffect, useState, useLayoutEffect } from "react";
-import {
-  Text,
-  FlatList,
-  Alert,
-  Modal,
-  View,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { useState, useLayoutEffect } from "react";
+import { Text, FlatList, Alert, Modal, View, StyleSheet } from "react-native";
 import styled from "styled-components/native";
 import PictureItem from "../components/buttons/PictureItem";
 
-import { tempPictureListData } from "../constants/tempData";
 import { deleteNotebook } from "../store/actions/noteBookActions";
 import { dispatchNotes } from "../store/index";
+import { deleteFolderFromDocumentDirectory } from "../utils/fileSystemHelper";
 
 const NoteBookScreen = ({ route, navigation }) => {
   const [pictureList, setPictureList] = useState([]);
   const [currentModal, setCurrentModal] = useState(null);
 
-  const { pictures, noteBookTitle, _id: notebookId } = route.params;
+  const { pictures, _id: notebookId } = route.params;
 
   useLayoutEffect(() => {
-    setPictureList(tempPictureListData);
+    setPictureList(pictures);
   }, [pictureList]);
 
-  // readDirectoryFromFileSystem();
+  console.log(pictureList);
 
   return (
     <Contatiner>
@@ -56,7 +48,9 @@ const NoteBookScreen = ({ route, navigation }) => {
           <NewPictureButton onPress={() => navigation.navigate("Painter")}>
             <Text style={{ fontSize: 60, marginBottom: 20 }}>📄</Text>
           </NewPictureButton>
-          <LoadPictureButton onPress={() => navigation.navigate("LoadImage")}>
+          <LoadPictureButton
+            onPress={() => navigation.navigate("LoadImage", { notebookId })}
+          >
             <Text style={{ fontSize: 60, marginBottom: 20 }}>✂️</Text>
           </LoadPictureButton>
         </TopButtons>
@@ -91,7 +85,8 @@ const NoteBookScreen = ({ route, navigation }) => {
                   </ModalButton>
                   <ModalButton
                     onPress={async () => {
-                      await dispatchNotes(deleteNotebook(notebookId));
+                      dispatchNotes(deleteNotebook(notebookId));
+                      await deleteFolderFromDocumentDirectory(notebookId);
                       navigation.goBack();
                     }}
                   >

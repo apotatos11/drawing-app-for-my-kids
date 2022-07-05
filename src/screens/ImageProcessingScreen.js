@@ -1,25 +1,45 @@
 import { useState } from "react";
 import { Text, Alert, StyleSheet, View, Image } from "react-native";
-import Slider from "@react-native-community/slider";
 import styled from "styled-components/native";
 import { openImagePickerAsync } from "../utils/imagePickerHelper";
+import {
+  copyPhotoAlbumImageFileToCacheDirectory,
+  downloadTemporaryImageToCacheDirectory,
+  temporaryPictureUri,
+  copyTemporaryImageFileToDocumentDirectory,
+  filePathMaker,
+  deleteTemporaryImage,
+} from "../utils/fileSystemHelper";
 
-const ImageProcessingScreen = () => {
+import { addPictureToNotebook } from "../store/actions/noteBookActions";
+import { dispatchNotes } from "../store";
+
+import { ImageSlider } from "../components/slider";
+import ControlButton from "../components/buttons/ControlButton";
+
+const ImageProcessingScreen = ({ route, navigation }) => {
   const [originalImageUri, setOriginalImageUri] = useState(null);
   const [processedImageUri, setProcessedImageUri] = useState(null);
   const [currentModal, setCurrentModal] = useState(null);
   const [onInputUrlModal, setInputUrlModal] = useState(false);
   const [currentInputUrl, setInputUrl] = useState(null);
+  const [imageSource, setImageSource] = useState(null);
 
   const [sigma, setSigma] = useState(0);
   const [lowThreshold, setLowThreshold] = useState(0);
   const [highThreshold, setHighThreshold] = useState(0);
 
+  const { notebookId } = route.params;
+
   const loadImagefromImagePicker = async () => {
     const imageUri = await openImagePickerAsync();
 
     setOriginalImageUri(imageUri);
+    setImageSource("photoAlbum");
   };
+
+  console.log("이미지 소스", imageSource);
+  console.log("편집된 이미지 Uri", processedImageUri);
 
   return (
     <Contatiner>
@@ -28,10 +48,7 @@ const ImageProcessingScreen = () => {
           style={{ borderRightColor: "black", borderRightWidth: 1 }}
         >
           {originalImageUri ? (
-            <Image
-              source={{ uri: originalImageUri }}
-              style={styles.thumbnail}
-            />
+            <Image source={{ uri: originalImageUri }} style={styles.preview} />
           ) : (
             <ImageLoadButton onPress={() => setCurrentModal("imageLoadModal")}>
               <Text
@@ -47,10 +64,7 @@ const ImageProcessingScreen = () => {
         </OriginalImageView>
         <ProcessedImageView>
           {processedImageUri ? (
-            <Image
-              source={{ uri: processedImageUri }}
-              style={styles.thumbnail}
-            />
+            <Image source={{ uri: processedImageUri }} style={styles.preview} />
           ) : (
             <Text style={{ fontSize: 20 }}>이미지가 없습니다.</Text>
           )}
@@ -61,45 +75,25 @@ const ImageProcessingScreen = () => {
           {originalImageUri && (
             <Sliders>
               <SliderItem>
-                <Slider
-                  style={{ width: 200, height: 40 }}
-                  step={0.1}
-                  minimumValue={0}
-                  maximumValue={2}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={(sliderValue) => setSigma(sliderValue)}
-                />
+                {ImageSlider(0.1, 0, 2, (sliderValue) => setSigma(sliderValue))}
                 <SliderStatus>
                   <SLiderLabel>Sigma :</SLiderLabel>
                   <SliderValue>{Math.floor(sigma * 10) / 10}</SliderValue>
                 </SliderStatus>
               </SliderItem>
               <SliderItem>
-                <Slider
-                  style={{ width: 200, height: 40 }}
-                  step={1}
-                  minimumValue={0}
-                  maximumValue={100}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={(sliderValue) => setLowThreshold(sliderValue)}
-                />
+                {ImageSlider(1, 0, 100, (sliderValue) =>
+                  setLowThreshold(sliderValue)
+                )}
                 <SliderStatus>
                   <SLiderLabel>Low Threshold :</SLiderLabel>
                   <SliderValue>{lowThreshold}</SliderValue>
                 </SliderStatus>
               </SliderItem>
               <SliderItem>
-                <Slider
-                  style={{ width: 200, height: 40 }}
-                  step={1}
-                  minimumValue={0}
-                  maximumValue={100}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={(sliderValue) => setHighThreshold(sliderValue)}
-                />
+                {ImageSlider(1, 0, 100, (sliderValue) =>
+                  setHighThreshold(sliderValue)
+                )}
                 <SliderStatus>
                   <SLiderLabel>High Threshold :</SLiderLabel>
                   <SliderValue>{highThreshold}</SliderValue>
@@ -110,29 +104,40 @@ const ImageProcessingScreen = () => {
         </SliderView>
         <ButtonsView>
           <ControlButton
-            style={styles.controlButton}
+            text="불러오기"
             onPress={() => setCurrentModal("imageLoadModal")}
-          >
-            <ButtonText>불러오기</ButtonText>
-          </ControlButton>
+          />
           <ControlButton
-            style={styles.controlButton}
+            text="채색제거"
             onPress={() => Alert.alert("채색제거 버튼")}
-          >
-            <ButtonText>채색제거</ButtonText>
-          </ControlButton>
+          />
           <ControlButton
-            style={styles.controlButton}
+            text="색상반전"
             onPress={() => Alert.alert("색상반전 버튼")}
-          >
-            <ButtonText>색상반전</ButtonText>
-          </ControlButton>
+          />
           <ControlButton
-            style={styles.controlButton}
-            onPress={() => Alert.alert("그림저장 버튼")}
-          >
-            <ButtonText>저장</ButtonText>
-          </ControlButton>
+            text="저장"
+            onPress={async () => {
+              const newDate = new Date();
+              const pictureId = "picture" + newDate.getTime();
+              const filePath = filePathMaker(notebookId, pictureId);
+
+              const newPictureInfo = {
+                _id: pictureId,
+                createdAt: newDate,
+                updatedAt: newDate,
+                filePath,
+              };
+
+              console.log("newPictureInfo", newPictureInfo);
+
+              dispatchNotes(addPictureToNotebook(notebookId, newPictureInfo));
+              await copyTemporaryImageFileToDocumentDirectory(filePath);
+              await deleteTemporaryImage();
+
+              navigation.goBack();
+            }}
+          />
         </ButtonsView>
       </DownerControlView>
       <ImageLoadModal
@@ -152,14 +157,34 @@ const ImageProcessingScreen = () => {
                     setOriginalImageUri(null);
                     setProcessedImageUri(null);
                     setCurrentModal(null);
+                    setImageSource(null);
                   }}
                 >
                   <ModalButtonText>취소</ModalButtonText>
                 </ModalButton>
                 <ModalButton
-                  onPress={() => {
-                    setProcessedImageUri(originalImageUri);
-                    setCurrentModal(null);
+                  onPress={async () => {
+                    if (imageSource === "photoAlbum") {
+                      if (processedImageUri) {
+                        setProcessedImageUri(null);
+                      }
+                      await copyPhotoAlbumImageFileToCacheDirectory(
+                        originalImageUri
+                      );
+                      setProcessedImageUri(temporaryPictureUri);
+                      setImageSource("fileSystem");
+                      setCurrentModal(null);
+                    } else if (imageSource === "url") {
+                      if (processedImageUri) {
+                        setProcessedImageUri(null);
+                      }
+                      await downloadTemporaryImageToCacheDirectory(
+                        originalImageUri
+                      );
+                      setProcessedImageUri(temporaryPictureUri);
+                      setImageSource("fileSystem");
+                      setCurrentModal(null);
+                    }
                   }}
                 >
                   <ModalButtonText>저장</ModalButtonText>
@@ -172,6 +197,7 @@ const ImageProcessingScreen = () => {
                 <ModalMainButton
                   onPress={() => {
                     setCurrentModal(null);
+                    setInputUrl(null);
                     setInputUrlModal(!onInputUrlModal);
                   }}
                 >
@@ -222,6 +248,7 @@ const ImageProcessingScreen = () => {
                     setOriginalImageUri(currentInputUrl);
                     setInputUrlModal(!onInputUrlModal);
                     setCurrentModal("imageLoadModal");
+                    setImageSource("url");
                   }}
                 >
                   <ImageUrlSaveButtonText>저장</ImageUrlSaveButtonText>
@@ -270,10 +297,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
-  thumbnail: {
+  preview: {
     width: 580,
     height: 580,
     resizeMode: "contain",
+    transform: [{ scale: 0.95 }],
   },
 });
 
@@ -371,21 +399,6 @@ const ButtonsView = styled.View`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-`;
-
-const ControlButton = styled.Pressable`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  border: 1px solid black;
-  width: 180px;
-  height: 60px;
-  border-radius: 10px;
-`;
-
-const ButtonText = styled.Text`
-  font-size: 30px;
 `;
 
 const ImageLoadModal = styled.Modal``;

@@ -15,14 +15,16 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
 import IconButton from "../components/buttons/IconButton";
 import NoteBookItem from "../components/buttons/NoteBookItem";
-import { tempNoteListData } from "../constants/tempData";
 import bookCoverImageList from "../constants/bookCoverImageList";
-import {
-  getItemFromAsyncStorage,
-  setItemToAsyncStorage,
-} from "../utils/asyncStorageHelper";
+import { getItemFromAsyncStorage } from "../utils/asyncStorageHelper";
 import { createNotebook } from "../store/actions/noteBookActions";
 import { dispatchNotes } from "../store/index";
+import {
+  readDirectoryFromDocumentDirectory,
+  makeNotebooksDirectoryToFileSystem,
+} from "../utils/fileSystemHelper";
+import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [noteBookList, setNoteBookList] = useState([]);
@@ -32,28 +34,29 @@ const HomeScreen = ({ navigation }) => {
   const [newNoteCoverImage, setNewNoteCoverImage] = useState("");
   const [currentChosenItem, setChosenItem] = useState("");
 
-  const getNoteBooks = async () => {
-    try {
-      const result = await getItemFromAsyncStorage("Notes");
+  console.log("notebooklist", noteBookList);
 
-      if (result === null || !result.length) {
-        await setItemToAsyncStorage("Notes", tempNoteListData);
-      }
+  const initializingApp = async () => {
+    const result = await FileSystem.getInfoAsync(
+      FileSystem.documentDirectory + "notebooks"
+    );
 
-      setNoteBookList(result);
-    } catch (error) {
-      console.log(error);
+    if (!result.exists) {
+      await makeNotebooksDirectoryToFileSystem();
     }
+
+    const noteBookList = await getItemFromAsyncStorage("Notes");
+    setNoteBookList(noteBookList);
   };
 
   useEffect(() => {
-    getNoteBooks();
-  }, [noteBookList]);
+    initializingApp();
+  }, []);
 
   return (
     <Contatiner>
       <LeftMainView>
-        {noteBookList.length > 0 ? (
+        {noteBookList && noteBookList.length > 0 ? (
           <FlatList
             data={noteBookList.sort(
               (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -63,6 +66,7 @@ const HomeScreen = ({ navigation }) => {
                 navigation={navigation}
                 noteBookTitle={item.noteBookTitle}
                 noteBookCoverImage={item.noteBookCoverImage}
+                noteBookId={item._id}
                 item={item}
               />
             )}
@@ -151,14 +155,14 @@ const HomeScreen = ({ navigation }) => {
                       return;
                     }
 
-                    dispatchNotes(
-                      createNotebook(newNoteTitle, newNoteCoverImage)
-                    );
-
                     setCurrentModal(null);
                     setNewNoteCoverImage("");
                     setNewNoteTitle("");
                     setChosenItem("");
+
+                    dispatchNotes(
+                      createNotebook(newNoteTitle, newNoteCoverImage)
+                    );
                   }}
                 >
                   <Text>생성</Text>

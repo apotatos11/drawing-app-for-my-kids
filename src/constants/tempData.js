@@ -8,25 +8,25 @@ export const tempNoteListData = [
     pictures: [
       {
         _id: "picture" + 1656767896912,
-        filePath: "",
+        filePath: require("../constants/pictures/1.png"),
         updatedAt: `${new Date(1656896661855)}`,
         createdAt: `${new Date(1656767896912)}`,
       },
       {
         _id: "picture" + 1656767896912,
-        filePath: "",
+        filePath: require("../constants/pictures/2.jpeg"),
         updatedAt: `${new Date(1656896661855)}`,
         createdAt: `${new Date(1656767896912)}`,
       },
       {
         _id: "picture" + 1656767896912,
-        filePath: "",
+        filePath: require("../constants/pictures/3.png"),
         updatedAt: `${new Date(1656896661855)}`,
         createdAt: `${new Date(1656767896912)}`,
       },
       {
         _id: "picture" + 1656767896912,
-        filePath: "",
+        filePath: require("../constants/pictures/4.jpeg"),
         updatedAt: `${new Date(1656896661855)}`,
         createdAt: `${new Date(1656767896912)}`,
       },
@@ -159,3 +159,8 @@ export const tempPictureListData = [
     createdAt: `${new Date(1656767896912)}`,
   },
 ];
+
+export const exampleUri = require("../constants/pictures/1.png");
+
+export const exampleUrl =
+  "https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800";

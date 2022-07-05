@@ -1,4 +1,8 @@
-import { CREATE_NOTEBOOK, DELETE_NOTEBOOK } from "../actions/noteBookActions";
+import {
+  CREATE_NOTEBOOK,
+  DELETE_NOTEBOOK,
+  ADD_PICTURE_TO_NOTEBOOK,
+} from "../actions/noteBookActions";
 
 export default function notebookReducer(state, action) {
   let newState;
@@ -23,6 +27,20 @@ export default function notebookReducer(state, action) {
       newState = state.filter((item) => item._id !== action.payload.notebookId);
 
       return newState;
+    case ADD_PICTURE_TO_NOTEBOOK: {
+      newState = [...state];
+      const { notebookId, newPictureInfo } = action.payload;
+      const targeIndex = newState.findIndex((a) => a._id === notebookId);
+
+      console.log("페이로드", action.payload);
+      console.log("새사진정보", newPictureInfo);
+
+      console.log("배열", newState[targeIndex]["pictures"]);
+      newState[targeIndex]["pictures"].push(newPictureInfo);
+      newState[targeIndex]["updatedAt"] = newDate;
+
+      return newState;
+    }
     default:
       return state;
   }
