@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, Alert, StyleSheet, View, Image } from "react-native";
 import Slider from "@react-native-community/slider";
 import styled from "styled-components/native";
 import { openImagePickerAsync } from "../utils/imagePickerHelper";
 
-const ImageProcessingScreen = ({ route, navigation }) => {
+const ImageProcessingScreen = () => {
   const [originalImageUri, setOriginalImageUri] = useState(null);
   const [processedImageUri, setProcessedImageUri] = useState(null);
-  const [currentModal, setCurrentModal] = useState("");
+  const [currentModal, setCurrentModal] = useState(null);
   const [onInputUrlModal, setInputUrlModal] = useState(false);
   const [currentInputUrl, setInputUrl] = useState(null);
 
@@ -20,8 +20,6 @@ const ImageProcessingScreen = ({ route, navigation }) => {
 
     setOriginalImageUri(imageUri);
   };
-
-  console.log(originalImageUri);
 
   return (
     <Contatiner>
@@ -72,7 +70,10 @@ const ImageProcessingScreen = ({ route, navigation }) => {
                   maximumTrackTintColor="#000000"
                   onValueChange={(sliderValue) => setSigma(sliderValue)}
                 />
-                <SLiderLabel>Sigma</SLiderLabel>
+                <SliderStatus>
+                  <SLiderLabel>Sigma :</SLiderLabel>
+                  <SliderValue>{Math.floor(sigma * 10) / 10}</SliderValue>
+                </SliderStatus>
               </SliderItem>
               <SliderItem>
                 <Slider
@@ -84,7 +85,10 @@ const ImageProcessingScreen = ({ route, navigation }) => {
                   maximumTrackTintColor="#000000"
                   onValueChange={(sliderValue) => setLowThreshold(sliderValue)}
                 />
-                <SLiderLabel>Low Threshold</SLiderLabel>
+                <SliderStatus>
+                  <SLiderLabel>Low Threshold :</SLiderLabel>
+                  <SliderValue>{lowThreshold}</SliderValue>
+                </SliderStatus>
               </SliderItem>
               <SliderItem>
                 <Slider
@@ -96,7 +100,10 @@ const ImageProcessingScreen = ({ route, navigation }) => {
                   maximumTrackTintColor="#000000"
                   onValueChange={(sliderValue) => setHighThreshold(sliderValue)}
                 />
-                <SLiderLabel>High Threshold</SLiderLabel>
+                <SliderStatus>
+                  <SLiderLabel>High Threshold :</SLiderLabel>
+                  <SliderValue>{highThreshold}</SliderValue>
+                </SliderStatus>
               </SliderItem>
             </Sliders>
           )}
@@ -143,6 +150,7 @@ const ImageProcessingScreen = ({ route, navigation }) => {
                 <ModalButton
                   onPress={() => {
                     setOriginalImageUri(null);
+                    setProcessedImageUri(null);
                     setCurrentModal(null);
                   }}
                 >
@@ -188,8 +196,8 @@ const ImageProcessingScreen = ({ route, navigation }) => {
               <ModalButtonView>
                 <ModalButton
                   onPress={() => {
-                    setOriginalImageUri(null);
                     setInputUrlModal(!onInputUrlModal);
+                    setInputUrl(null);
                   }}
                 >
                   <ModalButtonText>취소</ModalButtonText>
@@ -251,26 +259,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.75,
     shadowRadius: 4,
   },
-  centeredInputModalView: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    marginRight: 10,
-  },
-  inputModalView: {
-    width: 580,
-    height: 50,
-    backgroundColor: "white",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.75,
-    shadowRadius: 4,
-  },
+
   controlButton: {
     backgroundColor: "white",
     shadowColor: "#000",
@@ -345,17 +334,34 @@ const Sliders = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
 `;
 
 const SliderItem = styled.View`
   display: flex;
   align-items: center;
+  margin: 0px 50px;
+`;
+
+const SliderStatus = styled.View`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 200px;
+  padding-left: 15px;
 `;
 
 const SLiderLabel = styled.Text`
   font-size: 15px;
   font-weight: 600;
+  margin-right: 5px;
+`;
+
+const SliderValue = styled.Text`
+  font-size: 15px;
+  font-weight: 600;
+  color: blue;
+  width: 30px;
 `;
 
 const ButtonsView = styled.View`

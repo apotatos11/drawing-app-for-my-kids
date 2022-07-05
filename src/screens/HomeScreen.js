@@ -23,7 +23,6 @@ import {
 } from "../utils/asyncStorageHelper";
 import { createNotebook } from "../store/actions/noteBookActions";
 import { dispatchNotes } from "../store/index";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [noteBookList, setNoteBookList] = useState([]);
@@ -42,7 +41,9 @@ const HomeScreen = ({ navigation }) => {
       }
 
       setNoteBookList(result);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
