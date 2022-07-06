@@ -24,7 +24,6 @@ const NoteBookScreen = ({ route, navigation }) => {
       const targetNotebook = notebooks.find(
         (notebook) => notebook._id === notebookId
       );
-      console.log("targetNotebook", targetNotebook);
       setPictureList(targetNotebook.pictures);
       setLoading(false);
     };
@@ -37,7 +36,7 @@ const NoteBookScreen = ({ route, navigation }) => {
       <LeftMainView>
         {isLoading && (
           <LoadingView>
-            <LoadingText>Loading....</LoadingText>
+            <LoadingText>Loading...</LoadingText>
           </LoadingView>
         )}
         {!isLoading && pictureList.length > 0 && (
