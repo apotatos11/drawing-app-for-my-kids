@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { Text, Alert } from "react-native";
+import { Text } from "react-native";
 import { makeDirectoryToFileSystem } from "../../utils/fileSystemHelper";
 
 const NoteBookItem = ({

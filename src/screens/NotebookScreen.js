@@ -1,5 +1,5 @@
-import { useState, useLayoutEffect, useEffect } from "react";
-import { Text, FlatList, Alert, Modal, View, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { Text, FlatList, Modal, View, StyleSheet } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 import PictureItem from "../components/buttons/PictureItem";
@@ -15,19 +15,12 @@ const NoteBookScreen = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const isFocused = useIsFocused();
 
-  const { pictures, _id: notebookId, noteBookTitle } = route.params;
-
-  const getNotebooks = async () => {
-    const noteBookList = await getItemFromAsyncStorage("Notes");
-    return noteBookList;
-  };
-
-  const loadingHander = () => setLoading(true);
+  const { _id: notebookId, noteBookTitle } = route.params;
 
   useEffect(() => {
     const execute = async () => {
       setLoading(true);
-      const notebooks = await getNotebooks();
+      const notebooks = await getItemFromAsyncStorage("Notes");
       const targetNotebook = notebooks.find(
         (notebook) => notebook._id === notebookId
       );
@@ -43,9 +36,9 @@ const NoteBookScreen = ({ route, navigation }) => {
     <Contatiner>
       <LeftMainView>
         {isLoading && (
-          <View>
-            <Text>그림을 Loading중입니다. </Text>
-          </View>
+          <LoadingView>
+            <LoadingText>Loading....</LoadingText>
+          </LoadingView>
         )}
         {!isLoading && pictureList.length > 0 && (
           <FlatList
@@ -235,4 +228,16 @@ const ModalButtonText = styled.Text`
   font-size: 15px;
   font-weight: bold;
   color: black;
+`;
+
+const LoadingView = styled.View`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingText = styled.Text`
+  font-size: 100px;
+  height: 200px;
 `;

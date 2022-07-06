@@ -29,7 +29,7 @@ const ImageProcessingScreen = ({ route, navigation }) => {
   const [lowThreshold, setLowThreshold] = useState(0);
   const [highThreshold, setHighThreshold] = useState(0);
 
-  const { notebookId, loadingHander } = route.params;
+  const { notebookId } = route.params;
 
   const loadImagefromImagePicker = async () => {
     const imageUri = await openImagePickerAsync();

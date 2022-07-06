@@ -33,10 +33,7 @@ export const setItemToAsyncStorage = async (storageName, item) => {
   }
 
   try {
-    const result = await AsyncStorage.setItem(
-      storageName,
-      JSON.stringify(item)
-    );
+    await AsyncStorage.setItem(storageName, JSON.stringify(item));
 
     return console.log("입력 성공");
   } catch (error) {
