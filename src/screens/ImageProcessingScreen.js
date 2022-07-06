@@ -29,7 +29,7 @@ const ImageProcessingScreen = ({ route, navigation }) => {
   const [lowThreshold, setLowThreshold] = useState(0);
   const [highThreshold, setHighThreshold] = useState(0);
 
-  const { notebookId } = route.params;
+  const { notebookId, loadingHander } = route.params;
 
   const loadImagefromImagePicker = async () => {
     const imageUri = await openImagePickerAsync();
@@ -37,9 +37,6 @@ const ImageProcessingScreen = ({ route, navigation }) => {
     setOriginalImageUri(imageUri);
     setImageSource("photoAlbum");
   };
-
-  console.log("이미지 소스", imageSource);
-  console.log("편집된 이미지 Uri", processedImageUri);
 
   return (
     <Contatiner>
@@ -135,7 +132,10 @@ const ImageProcessingScreen = ({ route, navigation }) => {
               await copyTemporaryImageFileToDocumentDirectory(filePath);
               await deleteTemporaryImage();
 
-              navigation.goBack();
+              navigation.navigate(route.params.previousScreen, {
+                noteBookTitle: route.params.previousTitle,
+                _id: route.params.previousId,
+              });
             }}
           />
         </ButtonsView>

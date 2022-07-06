@@ -167,6 +167,15 @@ export const deleteFolderFromDocumentDirectory = async (folderName) => {
   }
 };
 
+export const deleteNotebooksFolderFromDocumentDirectory = async () => {
+  try {
+    await FileSystem.deleteAsync(documentDirectory + "notebooks");
+    console.log("노트북 폴더 삭제 성공");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const deleteTemporaryImage = async () => {
   try {
     await FileSystem.deleteAsync(temporaryPictureUri);

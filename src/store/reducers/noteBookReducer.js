@@ -32,10 +32,6 @@ export default function notebookReducer(state, action) {
       const { notebookId, newPictureInfo } = action.payload;
       const targeIndex = newState.findIndex((a) => a._id === notebookId);
 
-      console.log("페이로드", action.payload);
-      console.log("새사진정보", newPictureInfo);
-
-      console.log("배열", newState[targeIndex]["pictures"]);
       newState[targeIndex]["pictures"].push(newPictureInfo);
       newState[targeIndex]["updatedAt"] = newDate;
 

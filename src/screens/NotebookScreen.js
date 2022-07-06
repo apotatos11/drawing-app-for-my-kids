@@ -1,7 +1,9 @@
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { Text, FlatList, Alert, Modal, View, StyleSheet } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 import PictureItem from "../components/buttons/PictureItem";
+import { getItemFromAsyncStorage } from "../utils/asyncStorageHelper";
 
 import { deleteNotebook } from "../store/actions/noteBookActions";
 import { dispatchNotes } from "../store/index";
@@ -10,19 +12,42 @@ import { deleteFolderFromDocumentDirectory } from "../utils/fileSystemHelper";
 const NoteBookScreen = ({ route, navigation }) => {
   const [pictureList, setPictureList] = useState([]);
   const [currentModal, setCurrentModal] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+  const isFocused = useIsFocused();
 
-  const { pictures, _id: notebookId } = route.params;
+  const { pictures, _id: notebookId, noteBookTitle } = route.params;
 
-  useLayoutEffect(() => {
-    setPictureList(pictures);
-  }, [pictureList]);
+  const getNotebooks = async () => {
+    const noteBookList = await getItemFromAsyncStorage("Notes");
+    return noteBookList;
+  };
 
-  console.log(pictureList);
+  const loadingHander = () => setLoading(true);
+
+  useEffect(() => {
+    const execute = async () => {
+      setLoading(true);
+      const notebooks = await getNotebooks();
+      const targetNotebook = notebooks.find(
+        (notebook) => notebook._id === notebookId
+      );
+      console.log("targetNotebook", targetNotebook);
+      setPictureList(targetNotebook.pictures);
+      setLoading(false);
+    };
+
+    execute();
+  }, [isFocused]);
 
   return (
     <Contatiner>
       <LeftMainView>
-        {pictureList.length > 0 ? (
+        {isLoading && (
+          <View>
+            <Text>그림을 Loading중입니다. </Text>
+          </View>
+        )}
+        {!isLoading && pictureList.length > 0 && (
           <FlatList
             data={pictureList.sort(
               (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -37,7 +62,8 @@ const NoteBookScreen = ({ route, navigation }) => {
             keyExtractor={(item, index) => item._id + index}
             numColumns={3}
           />
-        ) : (
+        )}
+        {!isLoading && pictureList.length === 0 && (
           <Text style={{ paddingLeft: 20, fontSize: 20 }}>
             그림 목록이 없습니다.
           </Text>
@@ -49,7 +75,14 @@ const NoteBookScreen = ({ route, navigation }) => {
             <Text style={{ fontSize: 60, marginBottom: 20 }}>📄</Text>
           </NewPictureButton>
           <LoadPictureButton
-            onPress={() => navigation.navigate("LoadImage", { notebookId })}
+            onPress={() =>
+              navigation.navigate("LoadImage", {
+                notebookId,
+                previousScreen: route.name,
+                previousTitle: noteBookTitle,
+                previousId: notebookId,
+              })
+            }
           >
             <Text style={{ fontSize: 60, marginBottom: 20 }}>✂️</Text>
           </LoadPictureButton>

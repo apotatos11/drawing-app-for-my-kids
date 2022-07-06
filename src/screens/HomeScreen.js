@@ -16,41 +16,25 @@ import Feather from "@expo/vector-icons/Feather";
 import IconButton from "../components/buttons/IconButton";
 import NoteBookItem from "../components/buttons/NoteBookItem";
 import bookCoverImageList from "../constants/bookCoverImageList";
-import { getItemFromAsyncStorage } from "../utils/asyncStorageHelper";
 import { createNotebook } from "../store/actions/noteBookActions";
 import { dispatchNotes } from "../store/index";
-import {
-  readDirectoryFromDocumentDirectory,
-  makeNotebooksDirectoryToFileSystem,
-} from "../utils/fileSystemHelper";
-import * as FileSystem from "expo-file-system";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import useFetchNotebooks from "../hooks/useFetchNotebooks";
+import initializingApp from "../utils/initializaingApp";
+import { useIsFocused } from "@react-navigation/native";
 
 const HomeScreen = ({ navigation }) => {
-  const [noteBookList, setNoteBookList] = useState([]);
+  const isFocused = useIsFocused();
   const [currentModal, setCurrentModal] = useState(null);
-
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteCoverImage, setNewNoteCoverImage] = useState("");
   const [currentChosenItem, setChosenItem] = useState("");
-
-  console.log("notebooklist", noteBookList);
-
-  const initializingApp = async () => {
-    const result = await FileSystem.getInfoAsync(
-      FileSystem.documentDirectory + "notebooks"
-    );
-
-    if (!result.exists) {
-      await makeNotebooksDirectoryToFileSystem();
-    }
-
-    const noteBookList = await getItemFromAsyncStorage("Notes");
-    setNoteBookList(noteBookList);
-  };
+  const { noteBookList, setNoteBookList } = useFetchNotebooks(
+    isFocused,
+    currentModal
+  );
 
   useEffect(() => {
-    initializingApp();
+    initializingApp(setNoteBookList);
   }, []);
 
   return (
@@ -155,14 +139,14 @@ const HomeScreen = ({ navigation }) => {
                       return;
                     }
 
+                    await dispatchNotes(
+                      createNotebook(newNoteTitle, newNoteCoverImage)
+                    );
+
                     setCurrentModal(null);
                     setNewNoteCoverImage("");
                     setNewNoteTitle("");
                     setChosenItem("");
-
-                    dispatchNotes(
-                      createNotebook(newNoteTitle, newNoteCoverImage)
-                    );
                   }}
                 >
                   <Text>생성</Text>

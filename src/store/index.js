@@ -11,9 +11,6 @@ export const dispatchNotes = async (action) => {
     initialState = currentState;
   }
 
-  console.log("시작 스테이트", initialState);
-
-  const result = await notebookReducer(initialState, action);
-  console.log("reducer의 결과", result);
+  const result = notebookReducer(initialState, action);
   await setItemToAsyncStorage("Notes", result);
 };
