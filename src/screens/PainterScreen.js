@@ -20,11 +20,8 @@ import { colorList } from "../constants/painterOptions";
 
 const PainterScreen = ({ route, navigation }) => {
   const [currentModal, setCurrentModal] = useState();
-  const [currentPenSize, setCurrentPenSize] = useState(null);
-  const [currentPenColor, setCurrentPenColor] = useState(null);
-
-  console.log(currentPenColor);
-  console.log(currentPenSize);
+  const [currentPenType, setCurrentPenType] = useState("grease-pencil");
+  const [currentPenColor, setCurrentPenColor] = useState("black");
 
   const ref = useRef(null);
 
@@ -60,15 +57,33 @@ const PainterScreen = ({ route, navigation }) => {
           >
             <MaterialCommunityIcons name="camera" size={80} color="black" />
           </LoadPictureButton>
-          <PenPickerButton onPress={() => setCurrentModal("penModal")}>
+          <PenPickerButton
+            onPress={() => {
+              !currentModal
+                ? setCurrentModal("penModal")
+                : setCurrentModal(null);
+            }}
+          >
             <MaterialCommunityIcons
-              name="grease-pencil"
+              name={currentPenType}
               size={80}
               color="black"
             />
           </PenPickerButton>
-          <ColorPickerButton onPress={() => setCurrentModal("colorModal")}>
+          <ColorPickerButton
+            onPress={() => {
+              !currentModal
+                ? setCurrentModal("colorModal")
+                : setCurrentModal(null);
+            }}
+          >
             <MaterialIcons name="color-lens" size={80} color="black" />
+            <CurrentColorPreview
+              style={{
+                backgroundColor: currentPenColor,
+                overflow: "hidden",
+              }}
+            ></CurrentColorPreview>
           </ColorPickerButton>
           <EraserPickerButton onPress={() => Alert.alert("지우개")}>
             <MaterialCommunityIcons name="eraser" size={80} color="black" />
@@ -99,55 +114,65 @@ const PainterScreen = ({ route, navigation }) => {
           <View style={styles.penCenteredView}>
             <View style={styles.penModalView}>
               <PenModalView>
-                <PenModalTextBox onPress={() => setCurrentPenSize(1)}>
-                  <PenModalText
-                    style={{ width: 80, height: 1, backgroundColor: "black" }}
-                  ></PenModalText>
+                <PenModalTextBox
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setCurrentPenType("lead-pencil");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="lead-pencil"
+                    size={80}
+                    color="black"
+                  />
                 </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(3)}>
-                  <PenModalText
-                    style={{ width: 80, height: 3, backgroundColor: "black" }}
-                  ></PenModalText>
+                <PenModalTextBox
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setCurrentPenType("grease-pencil");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="grease-pencil"
+                    size={80}
+                    color="black"
+                  />
                 </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(5)}>
-                  <PenModalText
-                    style={{ width: 80, height: 5, backgroundColor: "black" }}
-                  ></PenModalText>
+                <PenModalTextBox
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setCurrentPenType("brush");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="brush"
+                    size={80}
+                    color="black"
+                  />
                 </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(7)}>
-                  <PenModalText
-                    style={{ width: 80, height: 7, backgroundColor: "black" }}
-                  ></PenModalText>
+                <PenModalTextBox
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setCurrentPenType("format-paint");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="format-paint"
+                    size={80}
+                    color="black"
+                  />
                 </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(9)}>
-                  <PenModalText
-                    style={{ width: 80, height: 9, backgroundColor: "black" }}
-                  ></PenModalText>
-                </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(11)}>
-                  <PenModalText
-                    style={{ width: 80, height: 11, backgroundColor: "black" }}
-                  ></PenModalText>
-                </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(13)}>
-                  <PenModalText
-                    style={{ width: 80, height: 13, backgroundColor: "black" }}
-                  ></PenModalText>
-                </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(15)}>
-                  <PenModalText
-                    style={{ width: 80, height: 15, backgroundColor: "black" }}
-                  ></PenModalText>
-                </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(17)}>
-                  <PenModalText
-                    style={{ width: 80, height: 17, backgroundColor: "black" }}
-                  ></PenModalText>
-                </PenModalTextBox>
-                <PenModalTextBox onPress={() => setCurrentPenSize(19)}>
-                  <PenModalText
-                    style={{ width: 80, height: 19, backgroundColor: "black" }}
-                  ></PenModalText>
+                <PenModalTextBox
+                  onPress={() => {
+                    setCurrentModal(null);
+                    setCurrentPenType("spray");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="spray"
+                    size={80}
+                    color="black"
+                  />
                 </PenModalTextBox>
               </PenModalView>
               <ModalCloseButton onPress={() => setCurrentModal(null)}>
@@ -171,7 +196,10 @@ const PainterScreen = ({ route, navigation }) => {
                 renderItem={({ item }) => (
                   <ColorButtonItem
                     color={item}
-                    PressHandler={(color) => setCurrentPenColor(color)}
+                    PressHandler={(color) => {
+                      setCurrentPenColor(color);
+                      setCurrentModal(null);
+                    }}
                   />
                 )}
                 keyExtractor={(item, index) => item + index}
@@ -213,8 +241,8 @@ const styles = StyleSheet.create({
   },
   penModalView: {
     width: "12%",
-    height: "50%",
-    backgroundColor: "white",
+    height: "70%",
+    backgroundColor: "silver",
     borderRadius: 20,
     paddingTop: 50,
     shadowColor: "#000",
@@ -267,7 +295,7 @@ const CanvasView = styled.View`
 const RightControlView = styled.View`
   width: 12%;
   background-color: silver;
-  padding-top: 30px;
+  padding-top: 25px;
   padding-bottom: 30px;
 
   display: flex;
@@ -306,7 +334,7 @@ const PenModalView = styled.View`
 
 const PenModalTextBox = styled.Pressable`
   width: 80px;
-  height: 20px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -320,4 +348,14 @@ const ModalCloseButton = styled(Pressable)`
   position: absolute;
   border-radius: 20px;
   padding: 10px;
+`;
+
+const CurrentColorPreview = styled.Text`
+  position: absolute;
+  right: 1px;
+  bottom: -1px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  border: 2px solid white;
 `;
