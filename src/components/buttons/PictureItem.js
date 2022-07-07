@@ -1,8 +1,16 @@
 import styled from "styled-components/native";
 import { Alert, StyleSheet, Image } from "react-native";
 
-const PictureItem = ({ navigation, item, uri }) => (
-  <NoteBookCard onPress={() => Alert.alert(`${item._id}을 선택 하였습니다.`)}>
+const PictureItem = ({ navigation, item, uri, notebookId }) => (
+  <NoteBookCard
+    onPress={() => {
+      console.log(item);
+      navigation.navigate("Painter", {
+        notebookId,
+        item,
+      });
+    }}
+  >
     <Image source={{ uri }} style={styles.preview} />
   </NoteBookCard>
 );

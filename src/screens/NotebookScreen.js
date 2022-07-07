@@ -49,6 +49,7 @@ const NoteBookScreen = ({ route, navigation }) => {
                 navigation={navigation}
                 item={item}
                 uri={item.filePath}
+                notebookId={notebookId}
               />
             )}
             keyExtractor={(item, index) => item._id + index}
